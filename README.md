@@ -1,4 +1,4 @@
-# Shopping Cart
+# Basic Informational Site
 
 ## Description
 
