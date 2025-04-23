@@ -12,7 +12,7 @@ const server = http.createServer((req, res) => {
   });
 
   const q = url.parse(req.url, true);
-  const filename = (q.pathname !== "/") ? '.' + q.pathname + ".html" : './index.html';
+  const filename = q.pathname !== '/' ? `.${q.pathname}.html` : './index.html';
 
   fs.readFile(filename, (err, data) => {
     if (err) {
