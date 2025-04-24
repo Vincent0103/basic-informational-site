@@ -53,4 +53,5 @@ app.get('*name', (_, res) => {
   return res.end();
 });
 
-app.listen(3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
