@@ -1,56 +1,38 @@
 import fs from 'fs';
+import path from 'path';
 import express from 'express';
 
 const app = express();
+
 let errorDataHtml;
 
 fs.readFile('./src/404.html', (err, data) => {
   errorDataHtml = err ? '404 Not Found' : data;
 });
 
-app.get('/', (_, res) => {
-  fs.readFile('./src/index.html', (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'content-type': 'text/html' });
-      res.write(errorDataHtml);
-    } else {
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.write(data);
-    }
-    return res.end();
+const routes = ['', 'about', 'contact-me'];
+routes.forEach((route) => {
+  app.get(`/${route}`, (_, res) => {
+    const filePath = path.join(
+      __dirname,
+      `${route.length === 0 ? 'index' : route}.html`
+    );
+    res.sendFile(filePath, (err) => {
+      if (err) res.status(404).type('html').send(errorDataHtml);
+    });
   });
 });
 
-app.get('/about', (_, res) => {
-  fs.readFile('./src/about.html', (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'content-type': 'text/html' });
-      res.write(errorDataHtml);
-    } else {
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.write(data);
-    }
-    return res.end();
-  });
-});
-
-app.get('/contact-me', (_, res) => {
-  fs.readFile('./src/contact-me.html', (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'content-type': 'text/html' });
-      res.write(errorDataHtml);
-    } else {
-      res.writeHead(200, { 'content-type': 'text/html' });
-      res.write(data);
-    }
-    return res.end();
-  });
-});
-
-app.get('*name', (_, res) => {
-  res.writeHead(404, { 'content-type': 'text/html' });
-  res.write(errorDataHtml);
-  return res.end();
+app.use((_, res) => {
+  const filePath = path.join(__dirname, '404.html');
+  res
+    .status(404)
+    .type('html')
+    .sendFile(filePath, (err) => {
+      if (err) {
+        res.send('404 Not Found');
+      }
+    });
 });
 
 const PORT = process.env.PORT || 3000;
